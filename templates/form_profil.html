@@ -22,7 +22,7 @@
     <input type="file" name="foto" id="input-foto" accept=".jpg,.jpeg,.png,.webp,image/*">
     <div class="pratinjau" id="pratinjau"{% if not (konten and konten.foto) %} hidden{% endif %}>
       <img id="pratinjau-gambar" alt="Pratinjau foto"
-           {% if konten and konten.foto %}src="{{ url_for('static', filename='uploads/' ~ konten.foto) }}"{% endif %}>
+           {% if konten and konten.foto %}src="{{ foto_url(konten.foto) }}"{% endif %}>
     </div>
   </div>
 

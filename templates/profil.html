@@ -21,7 +21,7 @@
         {% endif %}
       </div>
       {% if konten.foto %}
-      <img class="konten-foto" src="{{ url_for('static', filename='uploads/' ~ konten.foto) }}" alt="">
+      <img class="konten-foto" src="{{ foto_url(konten.foto) }}" alt="">
       {% endif %}
       <div class="konten-isi">{{ konten.isi }}</div>
       <p class="konten-meta">Diperbarui {{ konten.diperbarui | waktu_lalu }} oleh {{ konten.diperbarui_oleh }}</p>

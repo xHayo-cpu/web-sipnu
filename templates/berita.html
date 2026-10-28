@@ -10,7 +10,7 @@
     <!-- Kiri: foto -->
     <figure class="detail-kiri">
       {% if b.foto %}
-      <img class="detail-gambar" src="{{ url_for('static', filename='uploads/' ~ b.foto) }}" alt="Foto: {{ b.judul }}">
+      <img class="detail-gambar" src="{{ foto_url(b.foto) }}" alt="Foto: {{ b.judul }}">
       {% else %}
       <div class="detail-gambar detail-kosong" aria-hidden="true"></div>
       {% endif %}

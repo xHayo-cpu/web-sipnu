@@ -1,7 +1,7 @@
 {# Komponen berita yang dipakai di Beranda dan Foto Kegiatan #}
 {% macro gambar(b, nomor) -%}
   {% if b.foto -%}
-    <img src="{{ url_for('static', filename='uploads/' ~ b.foto) }}" alt="" loading="lazy">
+    <img src="{{ foto_url(b.foto) }}" alt="" loading="lazy">
   {%- else -%}
     <div class="ph ph-{{ nomor % 5 }}" aria-hidden="true"></div>
   {%- endif %}

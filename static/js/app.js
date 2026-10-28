@@ -118,7 +118,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if (foto.length) {
         // tiap ubin memotong bagian foto yang berbeda (zoom & posisi acak)
         var zoom = 100 + Math.floor(rnd() * 220);
-        ubin.style.backgroundImage = "url('" + basis + encodeURIComponent(foto[Math.floor(rnd() * foto.length)]) + "')";
+        var alamat = foto[Math.floor(rnd() * foto.length)];
+        ubin.style.backgroundImage = "url('" + (/^(https?:)?\//.test(alamat) ? alamat : basis + encodeURIComponent(alamat)) + "')";
         ubin.style.backgroundSize = (zoom === 100 ? "cover" : zoom + "%");
         ubin.style.backgroundPosition = Math.floor(rnd() * 100) + "% " + Math.floor(rnd() * 100) + "%";
       } else {

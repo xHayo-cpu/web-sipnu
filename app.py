@@ -30,13 +30,30 @@ from models import DAFTAR_KATEGORI, Berita, Pengguna, ProfilKonten, db
 
 app = Flask(__name__)
 
+
+def _url_database():
+    """Ambil alamat database dari variabel DATABASE_URL (mis. Neon). Bawaan: SQLite lokal."""
+    alamat = os.environ.get("DATABASE_URL", "sqlite:///sipnu.db").strip()
+    if alamat.startswith("postgres://"):            # SQLAlchemy butuh awalan postgresql://
+        alamat = "postgresql://" + alamat[len("postgres://"):]
+    return alamat
+
+
+# Foto disimpan di Cloudinary bila variabel CLOUDINARY_URL diisi (wajib saat online,
+# karena penyimpanan file di Render gratis bersifat sementara). Tanpa itu: simpan lokal.
+PAKAI_CLOUDINARY = bool(os.environ.get("CLOUDINARY_URL"))
+if PAKAI_CLOUDINARY:
+    import cloudinary
+    import cloudinary.uploader
+
 # ---------------------------------------------------------------------------
 # Konfigurasi
 # ---------------------------------------------------------------------------
 app.config.update(
     # Saat online, WAJIB diganti lewat variabel lingkungan SECRET_KEY.
     SECRET_KEY=os.environ.get("SECRET_KEY", "kunci-pengembangan-ganti-saat-online"),
-    SQLALCHEMY_DATABASE_URI=os.environ.get("DATABASE_URL", "sqlite:///sipnu.db"),
+    SQLALCHEMY_DATABASE_URI=_url_database(),
+    SQLALCHEMY_ENGINE_OPTIONS={"pool_pre_ping": True, "pool_recycle": 280},   # aman saat database gratis "tidur"
     MAX_CONTENT_LENGTH=5 * 1024 * 1024,          # batas unggahan 5 MB
     UPLOAD_FOLDER=os.path.join(app.static_folder, "uploads"),
     SESSION_COOKIE_HTTPONLY=True,
@@ -132,7 +149,7 @@ def data_umum():
         "aktif": ALIAS_TAB.get(request.endpoint, request.endpoint),
         "daftar_kategori": DAFTAR_KATEGORI,
         # foto kegiatan terbaru untuk latar kolase (disusun otomatis oleh app.js)
-        "kolase": [f for (f,) in db.session.query(Berita.foto)
+        "kolase": [foto_url(f) for (f,) in db.session.query(Berita.foto)
                    .filter(Berita.foto.isnot(None)).order_by(Berita.dibuat.desc()).limit(12)],
     }
 
@@ -216,7 +233,8 @@ def periksa_kata_sandi(sandi, ulang, username=""):
 
 
 def simpan_foto(file):
-    """Validasi lalu simpan foto. Mengembalikan nama file baru (atau None jika kosong)."""
+    """Validasi lalu simpan foto. Mengembalikan nama file (lokal) atau alamat https (Cloudinary).
+    Mengembalikan None jika tidak ada file."""
     if not file or not file.filename:
         return None
     ekstensi = os.path.splitext(file.filename)[1].lower().lstrip(".")
@@ -228,16 +246,46 @@ def simpan_foto(file):
     except Exception:
         raise ValueError("File yang diunggah bukan gambar yang valid.")
     file.stream.seek(0)
-    nama = f"{uuid.uuid4().hex}.{ekstensi}"      # nama acak, nama asli tidak dipakai
+    nama = uuid.uuid4().hex                      # nama acak, nama asli tidak dipakai
+    if PAKAI_CLOUDINARY:
+        try:
+            hasil = cloudinary.uploader.upload(
+                file.stream, folder="sipnu", public_id=nama, resource_type="image",
+                transformation=[{"width": 1600, "crop": "limit"}, {"quality": "auto"}])
+        except Exception:
+            app.logger.exception("Unggah ke Cloudinary gagal")
+            raise ValueError("Foto gagal diunggah ke penyimpanan. Coba lagi sebentar lagi.")
+        return hasil["secure_url"]
+    nama = f"{nama}.{ekstensi}"
     file.save(os.path.join(app.config["UPLOAD_FOLDER"], nama))
     return nama
 
 
+POLA_CLOUDINARY = re.compile(r"/upload/(?:v\d+/)?(.+)\.[A-Za-z0-9]+$")
+
+
 def hapus_foto(nama):
-    if nama:
-        jalur = os.path.join(app.config["UPLOAD_FOLDER"], os.path.basename(nama))
-        if os.path.isfile(jalur):
-            os.remove(jalur)
+    if not nama:
+        return
+    if nama.startswith("http"):                  # foto di Cloudinary
+        cocok = POLA_CLOUDINARY.search(nama)
+        if PAKAI_CLOUDINARY and cocok:
+            try:
+                cloudinary.uploader.destroy(cocok.group(1), resource_type="image")
+            except Exception:
+                app.logger.exception("Hapus foto di Cloudinary gagal")
+        return
+    jalur = os.path.join(app.config["UPLOAD_FOLDER"], os.path.basename(nama))
+    if os.path.isfile(jalur):
+        os.remove(jalur)
+
+
+@app.template_global("foto_url")
+def foto_url(nama):
+    """Alamat gambar: langsung dipakai jika sudah https (Cloudinary), selain itu dari static/uploads."""
+    if not nama:
+        return ""
+    return nama if nama.startswith("http") else url_for("static", filename="uploads/" + nama)
 
 
 def baca_formulir():
@@ -585,6 +633,67 @@ def buat_admin(username):
                                 password_hash=generate_password_hash(sandi), peran="admin"))
         click.echo(f"Admin '{username}' dibuat.")
     db.session.commit()
+
+
+@app.cli.command("pindah-data")
+@click.option("--sumber", default=None, help="Jalur file SQLite lama (bawaan: instance/sipnu.db).")
+def pindah_data(sumber):
+    """Menyalin akun, berita, dan profil dari SQLite lokal ke database online (DATABASE_URL),
+    lalu mengunggah foto lokal ke Cloudinary (CLOUDINARY_URL)."""
+    from sqlalchemy import create_engine
+    sumber = sumber or os.path.join(app.instance_path, "sipnu.db")
+    if not os.path.isfile(sumber):
+        raise click.ClickException(f"File database lama tidak ditemukan: {sumber}")
+    if _url_database().startswith("sqlite"):
+        raise click.ClickException("DATABASE_URL belum diisi alamat database online (Neon).")
+    if not PAKAI_CLOUDINARY:
+        raise click.ClickException("CLOUDINARY_URL belum diisi.")
+
+    lama = create_engine("sqlite:///" + os.path.abspath(sumber))
+    cache_foto = {}
+
+    def pindahkan_foto(nama):
+        """Unggah foto lokal ke Cloudinary (sekali per file). Alamat https dibiarkan."""
+        if not nama or nama.startswith("http"):
+            return nama
+        if nama not in cache_foto:
+            jalur = os.path.join(app.config["UPLOAD_FOLDER"], os.path.basename(nama))
+            if not os.path.isfile(jalur):
+                click.echo(f"  ! foto tidak ada di komputer, dilewati: {nama}")
+                cache_foto[nama] = None
+            else:
+                with open(jalur, "rb") as fh:
+                    hasil = cloudinary.uploader.upload(
+                        fh, folder="sipnu", public_id=os.path.splitext(os.path.basename(nama))[0],
+                        resource_type="image", overwrite=True,
+                        transformation=[{"width": 1600, "crop": "limit"}, {"quality": "auto"}])
+                cache_foto[nama] = hasil["secure_url"]
+                click.echo(f"  foto terunggah: {nama}")
+        return cache_foto[nama]
+
+    jumlah = {"pengguna": 0, "profil_konten": 0, "berita": 0}
+    with lama.connect() as sambung:
+        for model, tabel in ((Pengguna, "pengguna"), (ProfilKonten, "profil_konten"), (Berita, "berita")):
+            kolom = [c.name for c in model.__table__.columns]
+            baris = sambung.execute(text(f"SELECT * FROM {tabel}")).mappings().all()
+            for b in baris:
+                data = {k: b[k] for k in kolom if k in b}
+                if "foto" in data:
+                    data["foto"] = pindahkan_foto(data["foto"])
+                for k in ("dibuat", "diperbarui"):          # SQLite mengembalikan teks bila diambil mentah
+                    if isinstance(data.get(k), str):
+                        data[k] = datetime.fromisoformat(data[k])
+                if db.session.get(model, data["id"]) is None:
+                    db.session.add(model(**data))
+                    jumlah[tabel] += 1
+            db.session.commit()
+
+    if db.engine.dialect.name == "postgresql":              # samakan penghitung id setelah salin manual
+        for tabel in ("pengguna", "profil_konten", "berita"):
+            db.session.execute(text(
+                f"SELECT setval(pg_get_serial_sequence('{tabel}', 'id'), COALESCE((SELECT MAX(id) FROM {tabel}), 1))"))
+        db.session.commit()
+    click.echo(f"Selesai. Disalin: {jumlah['pengguna']} akun, {jumlah['profil_konten']} profil, {jumlah['berita']} berita.")
 
 
 @app.cli.command("jadikan-admin")

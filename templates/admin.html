@@ -20,7 +20,7 @@
   {% for b in daftar %}
   <div class="admin-baris">
     <div class="mini">
-      {% if b.foto %}<img src="{{ url_for('static', filename='uploads/' ~ b.foto) }}" alt="" loading="lazy">
+      {% if b.foto %}<img src="{{ foto_url(b.foto) }}" alt="" loading="lazy">
       {% else %}<div class="ph ph-{{ b.id % 5 }}" aria-hidden="true"></div>{% endif %}
     </div>
     <div class="admin-info">

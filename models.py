@@ -39,7 +39,7 @@ class ProfilKonten(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     judul = db.Column(db.String(200), nullable=False)
     isi = db.Column(db.Text, nullable=False)
-    foto = db.Column(db.String(100))          # hanya nama file di static/uploads/
+    foto = db.Column(db.String(500))          # nama file lokal, atau alamat https dari Cloudinary
     diperbarui = db.Column(db.DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     diperbarui_oleh = db.Column(db.String(50), nullable=False, default="admin")
 
@@ -49,7 +49,7 @@ class Berita(db.Model):
     judul = db.Column(db.String(200), nullable=False)
     deskripsi = db.Column(db.Text, nullable=False)
     kategori = db.Column(db.String(100), nullable=False, default="Berita")  # "Berita,Daerah"
-    foto = db.Column(db.String(100))          # hanya nama file di static/uploads/
+    foto = db.Column(db.String(500))          # nama file lokal, atau alamat https dari Cloudinary
     penulis = db.Column(db.String(50), nullable=False, default="admin")
     dibuat = db.Column(db.DateTime, nullable=False, default=datetime.now)
 
