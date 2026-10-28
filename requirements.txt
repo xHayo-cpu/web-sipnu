@@ -1,4 +1,2 @@
-Flask>=3.0
-Flask-SQLAlchemy>=3.1
-Flask-WTF>=1.2
-Pillow>=10.0
+   Flask==3.0.2
+   gunicorn==21.2.0

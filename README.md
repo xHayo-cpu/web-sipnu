@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # SIPNU – Sistem Informasi Pelajar Nahdlatul Ulama
 
 Website berita + akun pengguna. Ada dua jenis akun:
@@ -120,3 +121,6 @@ sipnu/
 6. Belum ada fitur "lupa kata sandi" dan verifikasi email (butuh layanan pengirim email).
    Sementara itu, admin bisa mengatur ulang kata sandi lewat terminal:
    `flask --app app buat-admin NAMA_PENGGUNA`.
+=======
+# web-sipnu
+>>>>>>> 7ba34b3b84201106777f61bd34913d5ae363a74c
