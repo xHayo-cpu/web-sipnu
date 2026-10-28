@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ b.judul }}{% endblock %}
+
+{% block isi %}
+{% set bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'] %}
+<article class="detail-baris">
+  <a class="kembali" href="{{ url_for('foto') }}">&larr; Kembali ke Foto Kegiatan</a>
+
+  <div class="detail-kolom">
+    <!-- Kiri: foto -->
+    <figure class="detail-kiri">
+      {% if b.foto %}
+      <img class="detail-gambar" src="{{ url_for('static', filename='uploads/' ~ b.foto) }}" alt="Foto: {{ b.judul }}">
+      {% else %}
+      <div class="detail-gambar detail-kosong" aria-hidden="true"></div>
+      {% endif %}
+    </figure>
+
+    <!-- Kanan: judul, deskripsi, lalu waktu unggah di bawah deskripsi -->
+    <div class="detail-kanan">
+      <ul class="tags">{% for k in b.kategori_list %}<li>{{ k }}</li>{% endfor %}</ul>
+      <h1>{{ b.judul }}</h1>
+      <div class="isi-teks">{{ b.deskripsi }}</div>
+      <p class="meta detail-waktu">
+        Diunggah <time datetime="{{ b.waktu.isoformat() }}">{{ b.waktu.day }} {{ bulan[b.waktu.month - 1] }} {{ b.waktu.year }}</time>
+        <span aria-hidden="true">&bull;</span> {{ b.waktu | waktu_lalu }}
+      </p>
+    </div>
+  </div>
+</article>
+{% endblock %}

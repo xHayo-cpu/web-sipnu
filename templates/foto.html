@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Foto Kegiatan{% endblock %}
+{% from "_komponen.html" import gambar, tag, meta %}
+
+{% block isi %}
+<div class="beranda">
+  <header class="profil-kepala">
+    <ul class="tags"><li>Foto Kegiatan</li></ul>
+    <h1>Foto Kegiatan</h1>
+  </header>
+
+{% if not utama %}
+  <section class="kosong-besar kotak-besar">
+    <h2>Belum ada foto kegiatan</h2>
+    <p>Berita dan foto kegiatan yang diunggah pengurus akan tampil di sini.</p>
+    {% if pengguna and pengguna.adalah_admin %}<a class="tombol" href="{{ url_for('admin_tambah') }}">Tambah berita pertama</a>{% endif %}
+  </section>
+{% else %}
+
+  <!-- Sorotan: berita utama + tiga berita terbaru -->
+  <section class="sorotan" aria-label="Sorotan">
+    <article class="utama">
+      {{ gambar(utama, 0) }}
+      <div class="utama-isi">
+        {{ tag(utama) }}
+        <h2><a class="tautan" href="{{ url_for('detail', id=utama.id) }}">{{ utama.judul }}</a></h2>
+        {{ meta(utama) }}
+      </div>
+    </article>
+
+    <div class="samping">
+      <h2 class="judul-seksi">Baru saja</h2>
+      {% for b in terbaru %}
+      <article class="baris">
+        <div class="mini">{{ gambar(b, loop.index) }}</div>
+        <div>
+          <h3><a class="tautan" href="{{ url_for('detail', id=b.id) }}">{{ b.judul }}</a></h3>
+          {{ meta(b) }}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Semua kabar dengan penyaring kategori -->
+  {% if semua %}
+  <section aria-labelledby="judul-kabar">
+    <div class="kepala-seksi">
+      <h2 class="judul-seksi" id="judul-kabar">Semua kabar</h2>
+      <div class="chips" role="group" aria-label="Saring kategori">
+        <button type="button" class="chip" data-filter="semua" aria-pressed="true">Semua <span>{{ semua|length }}</span></button>
+        {% for k in kategori %}
+        <button type="button" class="chip" data-filter="{{ k|lower }}" aria-pressed="false">{{ k }} <span>{{ jumlah[k] }}</span></button>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="kartu-grid" id="kartu-grid">
+      {% for b in semua %}
+      <article class="kartu" data-kategori="{% for k in b.kategori_list %}{{ k|lower }}{% if not loop.last %} {% endif %}{% endfor %}">
+        {{ gambar(b, loop.index + 3) }}
+        <div class="kartu-isi">
+          {{ tag(b) }}
+          <h3><a class="tautan" href="{{ url_for('detail', id=b.id) }}">{{ b.judul }}</a></h3>
+          {{ meta(b) }}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    <p class="kosong" id="kosong" hidden>Belum ada kabar untuk kategori ini.</p>
+  </section>
+  {% endif %}
+
+{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Daftar' if mode == 'daftar' else 'Masuk' }}{% endblock %}
+
+{# Kolom kata sandi dengan tombol Lihat/Sembunyi #}
+{% macro kolom_sandi(nama, label, otomatis) -%}
+<label class="medan">
+  <span>{{ label }}</span>
+  <div class="sandi">
+    <input type="password" name="{{ nama }}" autocomplete="{{ otomatis }}" required>
+    <button type="button" class="lihat" aria-label="Tampilkan kata sandi">Lihat</button>
+  </div>
+</label>
+{%- endmacro %}
+
+{% block isi %}
+<div class="masuk">
+
+  <aside class="masuk-panel">
+    <p class="masuk-merek">SIPNU</p>
+    <div>
+      <h2>Satu tempat untuk pelajar Nahdlatul Ulama.</h2>
+      <p>Masuk atau buat akun anggota untuk ikut dalam sistem informasi IPNU dan IPPNU.</p>
+    </div>
+  </aside>
+
+  <section class="masuk-form">
+    <nav class="segmen" aria-label="Pilih Masuk atau Daftar">
+      <a href="{{ url_for('login') }}"{% if mode == 'masuk' %} aria-current="page"{% endif %}>Masuk</a>
+      <a href="{{ url_for('daftar') }}"{% if mode == 'daftar' %} aria-current="page"{% endif %}>Daftar</a>
+    </nav>
+
+    {% if mode == 'masuk' %}
+    <form method="post" action="{{ url_for('login') }}" class="kolom-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div>
+        <h1>Selamat datang kembali</h1>
+        <p class="bantuan">Masuk dengan nama pengguna atau email Anda.</p>
+      </div>
+
+      <label class="medan">
+        <span>Nama pengguna atau email</span>
+        <input type="text" name="identitas" value="{{ data.identitas }}" autocomplete="username" required autofocus>
+      </label>
+      {{ kolom_sandi('password', 'Kata sandi', 'current-password') }}
+
+      <label class="pilih-kecil"><input type="checkbox" name="ingat"> Ingat saya selama 14 hari</label>
+      <button class="tombol blok" type="submit">Masuk</button>
+      <p class="alih">Belum punya akun? <a href="{{ url_for('daftar') }}">Daftar sekarang</a></p>
+    </form>
+
+    {% else %}
+    <form method="post" action="{{ url_for('daftar') }}" class="kolom-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div>
+        <h1>Buat akun anggota</h1>
+        <p class="bantuan">Gratis dan hanya butuh satu menit.</p>
+      </div>
+
+      <label class="medan">
+        <span>Nama lengkap</span>
+        <input type="text" name="nama_lengkap" value="{{ data.nama_lengkap }}" maxlength="80" autocomplete="name" required autofocus>
+      </label>
+      <label class="medan">
+        <span>Nama pengguna <small>(huruf kecil, angka, _)</small></span>
+        <input type="text" name="username" value="{{ data.username }}" maxlength="30" autocomplete="username" required>
+      </label>
+      <label class="medan">
+        <span>Email</span>
+        <input type="email" name="email" value="{{ data.email }}" maxlength="120" autocomplete="email" required>
+      </label>
+      {{ kolom_sandi('password', 'Kata sandi', 'new-password') }}
+      <p class="bantuan kecil">Minimal 8 karakter.</p>
+      {{ kolom_sandi('ulang', 'Ulangi kata sandi', 'new-password') }}
+
+      <button class="tombol blok" type="submit">Buat akun</button>
+      <p class="alih">Sudah punya akun? <a href="{{ url_for('login') }}">Masuk</a></p>
+    </form>
+    {% endif %}
+  </section>
+
+</div>
+{% endblock %}

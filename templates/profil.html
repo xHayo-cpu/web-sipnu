@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% block title %}Profil IPNU IPPNU{% endblock %}
+
+{% block isi %}
+<div class="profil-wrap">
+
+  <header class="profil-kepala">
+    <ul class="tags"><li>Profil</li></ul>
+    <h1>Profil IPNU IPPNU</h1>
+  </header>
+
+  <div class="profil-grid">
+
+    <!-- Kolom utama: sejarah kepengurusan ranting -->
+    {% if konten %}
+    <section class="profil-utama konten-profil">
+      <div class="konten-kepala">
+        <h2>{{ konten.judul }}</h2>
+        {% if pengguna and pengguna.adalah_admin %}
+        <a class="tombol tombol-garis" href="{{ url_for('admin_profil') }}">Ubah konten</a>
+        {% endif %}
+      </div>
+      {% if konten.foto %}
+      <img class="konten-foto" src="{{ url_for('static', filename='uploads/' ~ konten.foto) }}" alt="">
+      {% endif %}
+      <div class="konten-isi">{{ konten.isi }}</div>
+      <p class="konten-meta">Diperbarui {{ konten.diperbarui | waktu_lalu }} oleh {{ konten.diperbarui_oleh }}</p>
+    </section>
+    {% else %}
+    <section class="profil-utama kosong-besar">
+      <h2>Sejarah Kepengurusan Ranting IPNU IPPNU</h2>
+      <p>Sejarah dan perjalanan kepemimpinan PR IPNU IPPNU Desa Banjardowo akan ditampilkan di sini.</p>
+      {% if pengguna and pengguna.adalah_admin %}
+      <a class="tombol" href="{{ url_for('admin_profil') }}">Tambah konten</a>
+      {% endif %}
+    </section>
+    {% endif %}
+
+    <!-- Kolom samping: ringkasan sejarah NU, IPNU, IPPNU (tertutup, dibuka per bagian) -->
+    <aside class="panel-samping" aria-label="Sejarah NU, IPNU, IPPNU">
+      <h2 class="panel-judul">Sejarah NU, IPNU, IPPNU</h2>
+
+      <details class="akordeon">
+        <summary><span>Pengantar</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="akordeon-isi">
+          <p>Nahdlatul Ulama (NU), Ikatan Pelajar Nahdlatul Ulama (IPNU), dan Ikatan Pelajar Putri Nahdlatul Ulama (IPPNU) memiliki hubungan erat dalam perjalanan pendidikan, keagamaan, dan pengabdian masyarakat di Indonesia. NU berdiri pada 31 Januari 1926 di Surabaya, IPNU pada 24 Februari 1954 di Semarang, dan IPPNU pada 2 Maret 1955 di Malang.</p>
+          <p>Memahami sejarah ketiganya bukan sekadar menghafalkan tanggal kelahiran. Di balik perjalanan tersebut terdapat usaha membangun persatuan, mempertahankan tradisi keilmuan, memperjuangkan kemerdekaan, dan menyiapkan generasi penerus.</p>
+          <p class="sumber">Bacaan sumber:
+            <a href="https://www.nu.or.id/fragmen/sejarah-singkat-berdirinya-nahdlatul-ulama-vpza0" target="_blank" rel="noopener">Sejarah Singkat Berdirinya Nahdlatul Ulama</a>;
+            <a href="https://jabar.nu.or.id/sejarah/harlah-dan-sejarah-berdirinya-ipnu-C7hp1" target="_blank" rel="noopener">Harlah dan Sejarah Berdirinya IPNU</a>;
+            <a href="https://nu.or.id/fragmen/dari-solo-ke-malang-perjalanan-lahirnya-ippnu-MGctR" target="_blank" rel="noopener">Dari Solo ke Malang: Perjalanan Lahirnya IPPNU</a>.
+          </p>
+        </div>
+      </details>
+
+      <details class="akordeon">
+        <summary><span>Akar Kelahiran Nahdlatul Ulama</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="akordeon-isi">
+          <p>Nahdlatul Ulama berarti &ldquo;Kebangkitan Ulama&rdquo;. NU lahir dari lingkungan pesantren sebagai organisasi sosial keagamaan yang mengorganisasi peran ulama dalam kehidupan masyarakat. Perhatiannya tidak terbatas pada ibadah, tetapi juga mencakup pendidikan, kesejahteraan, dan kehidupan kebangsaan.</p>
+          <p>Kelahiran NU didahului berbagai gerakan. Nahdlatul Wathan, yang berdiri pada 1916, bergerak dalam pendidikan dan kesadaran kebangsaan. Tashwirul Afkar menjadi ruang diskusi serta pengembangan pemikiran. Sementara itu, Nahdlatut Tujjar, yang berdiri pada 1918, mendorong kemandirian ekonomi umat.</p>
+
+          <figure class="tokoh">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Ridwan_Abdullah.jpg" alt="Potret KH Ridwan Abdullah" loading="lazy">
+            <figcaption>
+              <p>KH Ridwan Abdullah, perancang lambang Nahdlatul Ulama. Foto potret; bukan dokumentasi pertemuan pendirian NU.</p>
+              <p class="kredit">Fotografer tidak diketahui; sumber buku <em>Penakluk Badai</em> (Aguk Irawan, 2012), hlm. 713; melalui Wikimedia Commons. Ditandai sebagai domain publik di Indonesia pada halaman sumber. <a href="https://commons.wikimedia.org/wiki/File:Ridwan_Abdullah.jpg" target="_blank" rel="noopener">Lihat sumber foto</a>.</p>
+            </figcaption>
+          </figure>
+
+          <p>Gerakan tersebut memperlihatkan hubungan antara pendidikan, pengembangan pemikiran, kemandirian ekonomi, dan kesadaran kebangsaan. Para ulama membangun fondasi perjuangan melalui bidang-bidang yang saling mendukung.</p>
+          <p>Perkembangan di Hijaz, wilayah yang mencakup Makkah dan Madinah, juga menjadi perhatian. Perubahan kekuasaan menimbulkan kekhawatiran mengenai kebebasan bermazhab dan pelestarian warisan sejarah Islam. Para ulama membentuk Komite Hijaz untuk menyampaikan aspirasi mereka. Pembentukan komite ini menjadi salah satu pemicu langsung berdirinya NU.</p>
+          <p class="sumber">Bacaan sumber:
+            <a href="https://nu.or.id/fragmen/cita-cita-dasar-berdirinya-nu-rZtXJ" target="_blank" rel="noopener">Cita-cita Dasar Berdirinya NU</a>;
+            <a href="https://www.nu.or.id/fragmen/sejarah-singkat-berdirinya-nahdlatul-ulama-vpza0" target="_blank" rel="noopener">Sejarah Singkat Berdirinya Nahdlatul Ulama</a>.
+          </p>
+        </div>
+      </details>
+
+      <details class="akordeon">
+        <summary><span>Berdirinya NU pada 31 Januari 1926</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="akordeon-isi">
+          <p>Pada 31 Januari 1926, bertepatan dengan 16 Rajab 1344 H, para ulama berkumpul di kediaman KH Abdul Wahab Chasbullah di Kertopaten, Surabaya. Pertemuan tersebut membahas kebutuhan organisasi yang mewakili ulama pesantren, termasuk dalam pengiriman delegasi Komite Hijaz. Dari proses ini lahirlah Nahdlatul Ulama.</p>
+          <p>Hadratussyaikh KH Hasyim Asy&rsquo;ari menjadi Rais Akbar NU. KH Abdul Wahab Chasbullah berperan penting dalam konsolidasi ulama, sedangkan KH Mas Alwi bin Abdul Aziz dikenal sebagai pengusul nama Nahdlatul Ulama. Pendirian NU merupakan perjuangan kolektif para kiai.</p>
+
+          <figure class="tokoh">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Hasyim_Asyari.jpg" alt="Potret Hadratussyaikh KH Hasyim Asy&rsquo;ari" loading="lazy">
+            <figcaption>
+              <p>Hadratussyaikh KH Hasyim Asy&rsquo;ari, Rais Akbar NU. Foto potret; bukan dokumentasi pertemuan pendirian NU.</p>
+              <p class="kredit">National Information and Communication Agency, Republik Indonesia; melalui Wikimedia Commons. Ditandai sebagai domain publik di Indonesia pada halaman sumber. <a href="https://commons.wikimedia.org/wiki/File:Hasyim_Asyari.jpg" target="_blank" rel="noopener">Lihat sumber foto</a>.</p>
+            </figcaption>
+          </figure>
+
+          <p>NU menjadi wadah memperkuat hubungan ulama dan pesantren, mengembangkan pendidikan, serta memelihara ajaran Ahlussunnah wal Jamaah melalui tradisi bermazhab. Organisasi memungkinkan potensi yang tersebar diarahkan menjadi gerakan bersama.</p>
+          <p class="sumber">Bacaan sumber:
+            <a href="https://www.nu.or.id/fragmen/sejarah-singkat-berdirinya-nahdlatul-ulama-vpza0" target="_blank" rel="noopener">Sejarah Singkat Berdirinya Nahdlatul Ulama</a>;
+            <a href="https://nu.or.id/fragmen/cita-cita-dasar-berdirinya-nu-rZtXJ" target="_blank" rel="noopener">Cita-cita Dasar Berdirinya NU</a>.
+          </p>
+        </div>
+      </details>
+
+      <details class="akordeon">
+        <summary><span>NU dalam Perjuangan Kemerdekaan</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="akordeon-isi">
+          <p>Salah satu peristiwa penting dalam sejarah NU adalah Resolusi Jihad. Pada 21&ndash;22 Oktober 1945, wakil-wakil NU dari Jawa dan Madura berkumpul di Surabaya untuk membahas ancaman terhadap negara yang baru merdeka. Pertemuan tersebut menghasilkan seruan mempertahankan kemerdekaan Indonesia.</p>
+          <p>Resolusi Jihad memperlihatkan hubungan tanggung jawab keagamaan dan kebangsaan. Seruan tersebut harus dipahami dalam konteks mempertahankan kemerdekaan dari ancaman penjajahan kembali, bukan sebagai pembenaran kekerasan secara umum.</p>
+          <p>Pada 1952, NU keluar dari Masyumi dan menjadi partai politik tersendiri. Pada 1973, NU bersama partai-partai Islam lainnya melebur ke dalam Partai Persatuan Pembangunan atau PPP.</p>
+          <p>Melalui Muktamar ke-27 di Situbondo pada 1984, NU menegaskan kembali Khittah 1926. Keputusan ini menempatkan kembali NU sebagai organisasi sosial keagamaan yang tidak terikat secara organisatoris kepada partai politik tertentu. Kembali ke khittah tidak berarti meninggalkan urusan bangsa, tetapi menegaskan dasar pengabdian organisasi.</p>
+          <p class="sumber">Bacaan sumber:
+            <a href="https://www.nu.or.id/nasional/resolusi-jihad-nu-icQwR" target="_blank" rel="noopener">Resolusi Jihad NU</a>;
+            <a href="https://www.nu.or.id/nasional/khittah-nu-44rmP" target="_blank" rel="noopener">Khittah NU</a>.
+          </p>
+        </div>
+      </details>
+
+      <details class="akordeon">
+        <summary><span>Lahirnya IPNU</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="akordeon-isi">
+          <p>Sebelum IPNU berdiri, telah berkembang perkumpulan pelajar dan santri NU yang bersifat lokal. Di antaranya Tsamrotul Mustafidin dan Persatoean Santri NO di Surabaya, Persatoean Anak Moerid NO di Malang, serta Ikatan Siswa Muballighin NO di Semarang.</p>
+          <p>Perkumpulan tersebut menunjukkan bahwa semangat berorganisasi telah tumbuh di kalangan pelajar Nahdliyin. Gerakan yang tersebar membutuhkan wadah nasional agar dapat terhubung, bekerja sama, dan memiliki arah perjuangan bersama.</p>
+          <p>Gagasan organisasi pelajar NU tingkat nasional dibahas dalam Konferensi Besar LP Ma&rsquo;arif NU di Semarang pada Februari 1954. Pada 24 Februari 1954, bertepatan dengan 20 Jumadil Akhir 1373 H, Ikatan Pelajar Nahdlatul Ulama resmi berdiri. Mohammad Tolchah Mansoer menjadi ketua pertamanya.</p>
+          <p>Sejak awal, IPNU diarahkan untuk menghimpun pelajar berhaluan Ahlussunnah wal Jamaah, meningkatkan pendidikan dan pengajaran Islam, serta mempererat hubungan pelajar dari pesantren, madrasah, sekolah umum, dan perguruan tinggi. IPNU menjadi jembatan di antara berbagai lingkungan pendidikan.</p>
+          <p class="sumber">Bacaan sumber:
+            <a href="https://jabar.nu.or.id/sejarah/harlah-dan-sejarah-berdirinya-ipnu-C7hp1" target="_blank" rel="noopener">Harlah dan Sejarah Berdirinya IPNU</a>.
+          </p>
+        </div>
+      </details>
+
+      <details class="akordeon">
+        <summary><span>Lahirnya IPPNU</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="akordeon-isi">
+          <p>Kebutuhan wadah organisasi juga tumbuh di kalangan pelajar putri NU. Mereka memerlukan ruang untuk mengembangkan pendidikan, kepemimpinan, dan kemampuan berorganisasi.</p>
+          <p>Sekitar 1954, sejumlah pelajar putri di Surakarta membicarakan gagasan tersebut. Di antaranya Umroh Machfudzoh, Atikah Murtadlo, Lathifah Hasyim, Romlah, dan Basyiroh Soimuri. Proses ini mendapat pendampingan Nihayah, Ketua Fatayat NU Cabang Surakarta.</p>
+          <p>Gagasan dikembangkan melalui penyusunan rancangan pendirian dan komunikasi dengan Pimpinan Pusat IPNU. Pembahasannya berlanjut dalam Kongres I IPNU di Malang pada 1955. Setelah konsultasi dengan tokoh Ma&rsquo;arif dan Muslimat NU, diputuskan bahwa organisasi pelajar putri berdiri tersendiri secara organisatoris dan administratif.</p>
+          <p>Pada 2 Maret 1955, bertepatan dengan 8 Rajab 1374 H, Ikatan Pelajar Putri Nahdlatul Ulama resmi berdiri di Malang. Umroh Machfudzoh memimpin pada masa pembentukan, didampingi Basyiroh Soimuri sebagai wakil ketua dan Syamsiyah Mutholib sebagai sekretaris.</p>
+          <p>Surakarta menjadi tempat pematangan gagasan, sedangkan Malang menjadi tempat kelahiran organisasi. Dalam catatan sejarah NU Online, Konferensi Besar di Solo pada 1956 kemudian membentuk kepengurusan Pimpinan Pusat dan memilih Basyiroh Soimuri. Pembedaan tahap pembentukan dan kepengurusan pusat penting untuk memahami variasi penyebutan pemimpin awal.</p>
+          <p>Kelahiran IPPNU menunjukkan bahwa pelajar putri bukan hanya penerima pembinaan, melainkan penggagas dan pelaku organisasi. Sejak awal, IPPNU memiliki kemandirian kepengurusan sekaligus hubungan kerja sama yang erat dengan IPNU.</p>
+          <p class="sumber">Bacaan sumber:
+            <a href="https://nu.or.id/fragmen/dari-solo-ke-malang-perjalanan-lahirnya-ippnu-MGctR" target="_blank" rel="noopener">Dari Solo ke Malang: Perjalanan Lahirnya IPPNU</a>.
+          </p>
+        </div>
+      </details>
+
+      <details class="akordeon">
+        <summary><span>Perubahan Nama IPNU dan IPPNU</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="akordeon-isi">
+          <p>Pada 1988, IPNU mengubah kepanjangannya dari Ikatan Pelajar Nahdlatul Ulama menjadi Ikatan Putra Nahdlatul Ulama. Pada tahun yang sama, IPPNU berubah menjadi Ikatan Putri-Putri Nahdlatul Ulama.</p>
+          <p>Perubahan tersebut berkaitan dengan keadaan politik dan kebijakan pendidikan masa Orde Baru yang membatasi ruang organisasi pelajar di sekolah serta menempatkan OSIS sebagai organisasi utama siswa. Penggunaan kata &ldquo;Putra&rdquo; dan &ldquo;Putri-Putri&rdquo; memperluas jangkauan organisasi di luar basis pelajar.</p>
+          <p>Pada 2003, keduanya kembali menegaskan identitas kepelajaran. IPNU kembali menggunakan nama Ikatan Pelajar Nahdlatul Ulama melalui kongres di Surabaya. IPPNU mengembalikan nama Ikatan Pelajar Putri Nahdlatul Ulama dalam Kongres XIII di Asrama Haji Sukolilo, Surabaya, pada 18&ndash;23 Juni 2003.</p>
+          <p>Pengembalian nama tersebut menegaskan kembali pendidikan dan pembinaan pelajar sebagai pusat perhatian organisasi, bukan sekadar perubahan istilah.</p>
+          <p class="sumber">Bacaan sumber:
+            <a href="https://jabar.nu.or.id/sejarah/harlah-dan-sejarah-berdirinya-ipnu-C7hp1" target="_blank" rel="noopener">Harlah dan Sejarah Berdirinya IPNU</a>;
+            <a href="https://nu.or.id/warta/urgensi-repositioning-ipnu-ippnu-E0gd4" target="_blank" rel="noopener">Urgensi Repositioning IPNU&ndash;IPPNU</a>;
+            <a href="https://jabar.nu.or.id/sejarah/sejarah-berdirinya-ippnu-PR4ad" target="_blank" rel="noopener">Sejarah Berdirinya IPPNU (lihat catatan redaksi)</a>.
+          </p>
+        </div>
+      </details>
+
+      <details class="akordeon">
+        <summary><span>Hubungan NU, IPNU, dan IPPNU</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="akordeon-isi">
+          <p>NU merupakan organisasi sosial keagamaan dengan lingkup pengabdian luas. Dalam lingkungan perjuangannya, IPNU dan IPPNU berkedudukan sebagai badan otonom yang membina generasi pelajar. IPNU menjadi wadah pelajar dan santri putra, sedangkan IPPNU menjadi wadah pelajar dan santri putri.</p>
+          <p>IPNU dan IPPNU merupakan dua organisasi dengan kepengurusan masing-masing, bukan satu organisasi dengan satu struktur. Kedekatan bidang perjuangan memungkinkan keduanya bekerja sama dalam pendidikan, kegiatan keagamaan, dan pembinaan pelajar.</p>
+          <p>Hubungan ketiganya memperlihatkan kesinambungan perjuangan. NU menyediakan lingkungan keagamaan dan pengabdian yang lebih luas, sedangkan IPNU dan IPPNU membangun ruang belajar bagi generasi penerus.</p>
+          <p class="sumber">Bacaan sumber:
+            <a href="https://nu.or.id/fragmen/cita-cita-dasar-berdirinya-nu-rZtXJ" target="_blank" rel="noopener">Cita-cita Dasar Berdirinya NU</a>;
+            <a href="https://jabar.nu.or.id/sejarah/harlah-dan-sejarah-berdirinya-ipnu-C7hp1" target="_blank" rel="noopener">Harlah dan Sejarah Berdirinya IPNU</a>;
+            <a href="https://nu.or.id/fragmen/dari-solo-ke-malang-perjalanan-lahirnya-ippnu-MGctR" target="_blank" rel="noopener">Dari Solo ke Malang: Perjalanan Lahirnya IPPNU</a>.
+          </p>
+        </div>
+      </details>
+
+      <details class="akordeon">
+        <summary><span>Memaknai Sejarah bagi Pelajar</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="akordeon-isi">
+          <p>Sejarah ketiga organisasi memperlihatkan pentingnya persatuan, pendidikan, dan keberanian mengambil tanggung jawab. NU lahir melalui konsolidasi ulama dan pesantren, IPNU menyatukan gerakan pelajar, dan IPPNU membangun ruang organisasi yang mandiri bagi pelajar putri.</p>
+          <p>Bagi pelajar masa kini, warisan tersebut dapat dimaknai melalui kebiasaan belajar, budaya diskusi, penghargaan terhadap perbedaan, latihan kepemimpinan, serta kegiatan yang bermanfaat bagi masyarakat.</p>
+          <p>Mempelajari sejarah tidak berhenti pada mengenang masa lalu. Sejarah menjadi bahan untuk menilai arah gerak organisasi: apakah kegiatan yang dijalankan memperluas pengetahuan, memperkuat persaudaraan, dan menumbuhkan tanggung jawab pelajar terhadap lingkungannya.</p>
+          <p class="sumber">Bacaan sumber:
+            <a href="https://nu.or.id/fragmen/cita-cita-dasar-berdirinya-nu-rZtXJ" target="_blank" rel="noopener">Cita-cita Dasar Berdirinya NU</a>;
+            <a href="https://jabar.nu.or.id/sejarah/harlah-dan-sejarah-berdirinya-ipnu-C7hp1" target="_blank" rel="noopener">Harlah dan Sejarah Berdirinya IPNU</a>;
+            <a href="https://nu.or.id/fragmen/dari-solo-ke-malang-perjalanan-lahirnya-ippnu-MGctR" target="_blank" rel="noopener">Dari Solo ke Malang: Perjalanan Lahirnya IPPNU</a>.
+          </p>
+        </div>
+      </details>
+
+    </aside>
+
+  </div>
+
+  <!-- Lokasi kantor -->
+  <section class="lokasi-kantor">
+    <div class="lokasi-info">
+      <h2>Lokasi Kantor</h2>
+      <p>{{ lokasi }}</p>
+      <a class="tombol" href="https://www.google.com/maps/search/?api=1&amp;query={{ lokasi_maps }}" target="_blank" rel="noopener">Buka di Google Maps</a>
+    </div>
+    <div class="lokasi-peta">
+      <iframe src="https://www.google.com/maps?q={{ lokasi_maps }}&amp;output=embed" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade" title="Peta lokasi kantor PR IPNU IPPNU Banjardowo"></iframe>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Ubah berita' if berita else 'Tambah berita' }}{% endblock %}
+
+{% block isi %}
+<form class="kotak-form" method="post" enctype="multipart/form-data"
+      action="{{ url_for('admin_ubah', id=berita.id) if berita else url_for('admin_tambah') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <h1>{{ 'Ubah berita' if berita else 'Tambah berita' }}</h1>
+
+  <label class="medan">
+    <span>Judul</span>
+    <input type="text" name="judul" maxlength="200" value="{{ data.judul }}" required>
+  </label>
+
+  <label class="medan">
+    <span>Deskripsi</span>
+    <textarea name="deskripsi" rows="9" required>{{ data.deskripsi }}</textarea>
+  </label>
+
+  <fieldset class="medan">
+    <legend>Kategori</legend>
+    <div class="pilihan">
+      {% for k in daftar_kategori %}
+      <label class="pilih"><input type="checkbox" name="kategori" value="{{ k }}"{% if k in data.kategori %} checked{% endif %}> {{ k }}</label>
+      {% endfor %}
+    </div>
+  </fieldset>
+
+  <div class="medan">
+    <span>Foto {% if berita and berita.foto %}<small>(pilih file baru untuk mengganti)</small>{% else %}<small>(JPG, PNG, atau WEBP, maks. 5 MB)</small>{% endif %}</span>
+    <input type="file" name="foto" id="input-foto" accept=".jpg,.jpeg,.png,.webp,image/*">
+    <div class="pratinjau" id="pratinjau"{% if not (berita and berita.foto) %} hidden{% endif %}>
+      <img id="pratinjau-gambar" alt="Pratinjau foto"
+           {% if berita and berita.foto %}src="{{ url_for('static', filename='uploads/' ~ berita.foto) }}"{% endif %}>
+    </div>
+  </div>
+
+  <div class="aksi">
+    <button class="tombol" type="submit">{{ 'Simpan perubahan' if berita else 'Terbitkan' }}</button>
+    <a class="tombol tombol-garis" href="{{ url_for('admin') }}">Batal</a>
+  </div>
+</form>
+{% endblock %}

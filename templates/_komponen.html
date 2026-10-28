@@ -1,0 +1,16 @@
+{# Komponen berita yang dipakai di Beranda dan Foto Kegiatan #}
+{% macro gambar(b, nomor) -%}
+  {% if b.foto -%}
+    <img src="{{ url_for('static', filename='uploads/' ~ b.foto) }}" alt="" loading="lazy">
+  {%- else -%}
+    <div class="ph ph-{{ nomor % 5 }}" aria-hidden="true"></div>
+  {%- endif %}
+{%- endmacro %}
+
+{% macro tag(b) -%}
+  <ul class="tags">{% for k in b.kategori_list %}<li>{{ k }}</li>{% endfor %}</ul>
+{%- endmacro %}
+
+{% macro meta(b) -%}
+  <p class="meta"><time datetime="{{ b.waktu.isoformat() }}">{{ b.waktu | waktu_lalu }}</time></p>
+{%- endmacro %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Kelola Berita{% endblock %}
+
+{% block isi %}
+<div class="admin">
+  <div class="admin-kepala">
+    <div>
+      <h1>Kelola Berita</h1>
+      <p class="bantuan">Masuk sebagai {{ pengguna.nama_lengkap }} &middot; {{ daftar|length }} berita</p>
+    </div>
+    <div class="aksi">
+      <a class="tombol" href="{{ url_for('admin_tambah') }}">Tambah berita</a>
+      <form method="post" action="{{ url_for('logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="tombol tombol-garis" type="submit">Keluar</button>
+      </form>
+    </div>
+  </div>
+
+  {% for b in daftar %}
+  <div class="admin-baris">
+    <div class="mini">
+      {% if b.foto %}<img src="{{ url_for('static', filename='uploads/' ~ b.foto) }}" alt="" loading="lazy">
+      {% else %}<div class="ph ph-{{ b.id % 5 }}" aria-hidden="true"></div>{% endif %}
+    </div>
+    <div class="admin-info">
+      <a class="admin-judul" href="{{ url_for('detail', id=b.id) }}">{{ b.judul }}</a>
+      <p class="meta">{{ b.kategori_list | join(', ') }} <span aria-hidden="true">/</span> {{ b.waktu | waktu_lalu }}</p>
+    </div>
+    <div class="aksi">
+      <a class="tombol tombol-garis" href="{{ url_for('admin_ubah', id=b.id) }}">Ubah</a>
+      <form method="post" action="{{ url_for('admin_hapus', id=b.id) }}"
+            onsubmit="return confirm('Hapus berita ini? Tindakan tidak bisa dibatalkan.')">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="tombol tombol-garis tombol-bahaya" type="submit">Hapus</button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <p class="kosong">Belum ada berita. Klik "Tambah berita" untuk memulai.</p>
+  {% endfor %}
+</div>
+{% endblock %}

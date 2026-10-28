@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}SIPNU{% endblock %}
+{% from "_komponen.html" import gambar, tag, meta %}
+
+{% block isi %}
+<div class="beranda">
+
+  <!-- Foto kegiatan (berita yang diunggah admin) -->
+  <section aria-label="Kegiatan terbaru">
+    <h2 class="judul-seksi judul-hero">Kegiatan Terbaru</h2>
+    {% if kegiatan %}
+    <div class="kartu-grid kartu-grid-ringkas">
+      {% for b in kegiatan %}
+      <article class="kartu">
+        {{ gambar(b, loop.index) }}
+        <div class="kartu-isi">
+          {{ tag(b) }}
+          <h3><a class="tautan" href="{{ url_for('detail', id=b.id) }}">{{ b.judul }}</a></h3>
+          {{ meta(b) }}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    <p class="lihat-semua-baris"><a class="lihat-semua" href="{{ url_for('foto') }}">Lihat semua &rarr;</a></p>
+    {% else %}
+    <div class="kosong-besar kotak-besar">
+      <h2>Belum ada kegiatan</h2>
+      <p>Berita dan foto kegiatan yang diunggah pengurus akan tampil di sini.</p>
+      {% if pengguna and pengguna.adalah_admin %}<a class="tombol" href="{{ url_for('admin_tambah') }}">Tambah berita pertama</a>{% endif %}
+    </div>
+    {% endif %}
+  </section>
+
+  <!-- Pintasan: tiga gelembung sejajar -->
+  <nav class="gelembung" aria-label="Pintasan halaman">
+    <a class="gel" href="{{ url_for('susunan') }}">
+      <span class="gel-ikon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-4h12v4"/></svg>
+      </span>
+      <span class="gel-teks"><strong>Susunan Pengurus</strong><small>Struktur kepengurusan</small></span>
+    </a>
+    <a class="gel" href="{{ url_for('profil') }}">
+      <span class="gel-ikon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 5a3.5 3.5 0 0 1 0 6.5"/><path d="M18 14.3c2 .7 3.5 2.5 3.5 5.2"/></svg>
+      </span>
+      <span class="gel-teks"><strong>Profil</strong><small>Sejarah &amp; kepengurusan</small></span>
+    </a>
+    <a class="gel" href="{{ url_for('administrasi') }}">
+      <span class="gel-ikon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 14h6M12 11v6"/></svg>
+      </span>
+      <span class="gel-teks"><strong>Data Administrasi</strong><small>Dokumen organisasi</small></span>
+    </a>
+  </nav>
+
+  <!-- Ajakan mendaftar -->
+  <section class="ajakan">
+    <div>
+      <h2>Ingin bergabung sebagai pengurus?</h2>
+      <p>Isi formulir pendaftaran dan bergabunglah bersama pelajar NU lainnya.</p>
+    </div>
+    <a class="tombol" href="{{ url_for('susunan') }}#pendaftaran">Buka pendaftaran</a>
+  </section>
+
+</div>
+{% endblock %}

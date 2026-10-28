@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Akun Saya{% endblock %}
+
+{% block isi %}
+<div class="akun">
+  <section class="akun-kartu">
+    <div class="avatar" aria-hidden="true">{{ pengguna.inisial }}</div>
+    <div class="akun-data">
+      <h1>{{ pengguna.nama_lengkap }}</h1>
+      <p class="meta">@{{ pengguna.username }} <span aria-hidden="true">/</span> {{ pengguna.email }}</p>
+      <p class="meta">Bergabung {{ pengguna.dibuat.strftime('%d-%m-%Y') }}
+        {% if pengguna.adalah_admin %}<span class="lencana">Admin</span>{% else %}<span class="lencana">Anggota</span>{% endif %}</p>
+    </div>
+    <div class="aksi">
+      {% if pengguna.adalah_admin %}<a class="tombol" href="{{ url_for('admin') }}">Kelola berita</a>{% endif %}
+      <form method="post" action="{{ url_for('logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="tombol tombol-garis" type="submit">Keluar</button>
+      </form>
+    </div>
+  </section>
+
+  <form class="kotak-form kecil" method="post" action="{{ url_for('ganti_sandi') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <h2>Ganti kata sandi</h2>
+    <label class="medan"><span>Kata sandi lama</span>
+      <div class="sandi"><input type="password" name="lama" autocomplete="current-password" required><button type="button" class="lihat" aria-label="Tampilkan kata sandi">Lihat</button></div></label>
+    <label class="medan"><span>Kata sandi baru <small>(minimal 8 karakter)</small></span>
+      <div class="sandi"><input type="password" name="baru" autocomplete="new-password" required><button type="button" class="lihat" aria-label="Tampilkan kata sandi">Lihat</button></div></label>
+    <label class="medan"><span>Ulangi kata sandi baru</span>
+      <div class="sandi"><input type="password" name="ulang" autocomplete="new-password" required><button type="button" class="lihat" aria-label="Tampilkan kata sandi">Lihat</button></div></label>
+    <button class="tombol" type="submit">Simpan kata sandi</button>
+  </form>
+</div>
+{% endblock %}

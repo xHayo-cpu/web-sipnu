@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Ubah konten Profil' if konten else 'Tambah konten Profil' }}{% endblock %}
+
+{% block isi %}
+<form class="kotak-form" method="post" enctype="multipart/form-data" action="{{ url_for('admin_profil') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <h1>{{ 'Ubah konten Profil' if konten else 'Tambah konten Profil' }}</h1>
+  <p class="bantuan">Konten ini tampil di kolom utama halaman Profil IPNU IPPNU.</p>
+
+  <label class="medan">
+    <span>Judul</span>
+    <input type="text" name="judul" maxlength="200" value="{{ data.judul }}" required>
+  </label>
+
+  <label class="medan">
+    <span>Isi</span>
+    <textarea name="isi" rows="14" required>{{ data.isi }}</textarea>
+  </label>
+
+  <div class="medan">
+    <span>Foto {% if konten and konten.foto %}<small>(pilih file baru untuk mengganti)</small>{% else %}<small>(opsional &mdash; JPG, PNG, atau WEBP, maks. 5 MB)</small>{% endif %}</span>
+    <input type="file" name="foto" id="input-foto" accept=".jpg,.jpeg,.png,.webp,image/*">
+    <div class="pratinjau" id="pratinjau"{% if not (konten and konten.foto) %} hidden{% endif %}>
+      <img id="pratinjau-gambar" alt="Pratinjau foto"
+           {% if konten and konten.foto %}src="{{ url_for('static', filename='uploads/' ~ konten.foto) }}"{% endif %}>
+    </div>
+  </div>
+
+  <div class="aksi">
+    <button class="tombol" type="submit">{{ 'Simpan perubahan' if konten else 'Terbitkan' }}</button>
+    <a class="tombol tombol-garis" href="{{ url_for('profil') }}">Batal</a>
+  </div>
+</form>
+{% endblock %}
