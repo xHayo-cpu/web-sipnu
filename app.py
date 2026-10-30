@@ -1,13 +1,3 @@
-"""
-SIPNU - Sistem Informasi Pelajar Nahdlatul Ulama
-
-Cara menjalankan (lihat README.md untuk langkah lengkap):
-    pip install -r requirements.txt
-    flask --app app buat-admin NAMA_PENGGUNA
-    python app.py
-Lalu buka http://127.0.0.1:5000
-"""
-
 import os
 import re
 import time
@@ -252,9 +242,10 @@ def simpan_foto(file):
             hasil = cloudinary.uploader.upload(
                 file.stream, folder="sipnu", public_id=nama, resource_type="image",
                 transformation=[{"width": 1600, "crop": "limit"}, {"quality": "auto"}])
-        except Exception:
+        except Exception as e:
             app.logger.exception("Unggah ke Cloudinary gagal")
-            raise ValueError("Foto gagal diunggah ke penyimpanan. Coba lagi sebentar lagi.")
+            alasan = " ".join(str(e).split())[:200] or type(e).__name__
+            raise ValueError(f"Foto gagal diunggah ke penyimpanan. Alasan: {alasan}")
         return hasil["secure_url"]
     nama = f"{nama}.{ekstensi}"
     file.save(os.path.join(app.config["UPLOAD_FOLDER"], nama))
