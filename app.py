@@ -1,3 +1,13 @@
+"""
+SIPNU - Sistem Informasi Pelajar Nahdlatul Ulama
+
+Cara menjalankan (lihat README.md untuk langkah lengkap):
+    pip install -r requirements.txt
+    flask --app app buat-admin NAMA_PENGGUNA
+    python app.py
+Lalu buka http://127.0.0.1:5000
+"""
+
 import os
 import re
 import time
@@ -22,10 +32,12 @@ app = Flask(__name__)
 
 
 def _url_database():
-    """Ambil alamat database dari variabel DATABASE_URL (mis. Neon). Bawaan: SQLite lokal."""
-    alamat = os.environ.get("DATABASE_URL", "sqlite:///sipnu.db").strip()
-    if alamat.startswith("postgres://"):            # SQLAlchemy butuh awalan postgresql://
-        alamat = "postgresql://" + alamat[len("postgres://"):]
+    """Ambil alamat database dari variabel DATABASE_URL (mis. Neon). Bawaan: SQLite lokal.
+    Alamat Postgres tanpa nama driver dipaksa memakai driver psycopg (v3)."""
+    alamat = os.environ.get("DATABASE_URL", "sqlite:///sipnu.db").strip().strip("\"'")
+    for awalan in ("postgres://", "postgresql://"):
+        if alamat.startswith(awalan):
+            return "postgresql+psycopg://" + alamat[len(awalan):]
     return alamat
 
 
